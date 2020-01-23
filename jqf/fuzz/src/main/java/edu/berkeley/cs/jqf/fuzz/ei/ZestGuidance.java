@@ -369,10 +369,9 @@ public class ZestGuidance implements Guidance {
         displayStats(false);
     }
     
-    // Call only if console exists
+
     private void displayStats(boolean force) {
-//        assert (console != null);
-//        console.printf("HERE");
+
         Date now = new Date();
         long intervalMilliseconds = now.getTime() - lastRefreshTime.getTime();
         if (!force && intervalMilliseconds < STATS_REFRESH_TIME_PERIOD) {
@@ -401,31 +400,33 @@ public class ZestGuidance implements Guidance {
         double nonZeroFraction = nonZeroCount * 100.0 / totalCoverage.size();
         int nonZeroValidCount = validCoverage.getNonZeroCount();
         double nonZeroValidFraction = nonZeroValidCount * 100.0 / validCoverage.size();
-/*
-        console.printf("\033[2J");
-        console.printf("\033[H");
-        console.printf(this.getTitle() + "\n");
-        if (this.testName != null) {
-            console.printf("Test name:            %s\n", this.testName);
+        if (console != null ){
+            console.printf("\033[2J");
+            console.printf("\033[H");
+            console.printf(this.getTitle() + "\n");
+            if (this.testName != null) {
+                console.printf("Test name:            %s\n", this.testName);
+            }
+            console.printf("Results directory:    %s\n", this.outputDirectory.getAbsolutePath());
+            console.printf("Elapsed time:         %s (%s)\n", millisToDuration(elapsedMilliseconds),
+                    maxDurationMillis == Long.MAX_VALUE ? "no time limit" : ("max " + millisToDuration(maxDurationMillis)));
+            console.printf("Number of executions: %,d\n", numTrials);
+            console.printf("Valid inputs:         %,d (%.2f%%)\n", numValid, numValid*100.0/numTrials);
+            console.printf("Cycles completed:     %d\n", cyclesCompleted);
+            console.printf("Unique failures:      %,d\n", uniqueFailures.size());
+            console.printf("Queue size:           %,d (%,d favored last cycle)\n", savedInputs.size(), numFavoredLastCycle);
+            console.printf("Current parent input: %s\n", currentParentInputDesc);
+            console.printf("Execution speed:      %,d/sec now | %,d/sec overall\n", intervalExecsPerSec, execsPerSec);
+            console.printf("Total coverage:       %,d branches (%.2f%% of map)\n", nonZeroCount, nonZeroFraction);
+            console.printf("Valid coverage:       %,d branches (%.2f%% of map)\n", nonZeroValidCount, nonZeroValidFraction);
+            console.printf("Unique valid inputs:  %,d (%.2f%%)\n", uniqueValidInputs.size(),
+                    uniqueValidInputs.size()*100.0/numTrials);
+            console.printf("Unique valid paths:   %,d \n", uniquePaths.size());
+            console.printf("''  non-zero paths:   %,d \n", uniqueBranchSets.size());
         }
-        console.printf("Results directory:    %s\n", this.outputDirectory.getAbsolutePath());
-        console.printf("Elapsed time:         %s (%s)\n", millisToDuration(elapsedMilliseconds),
-                maxDurationMillis == Long.MAX_VALUE ? "no time limit" : ("max " + millisToDuration(maxDurationMillis)));
-        console.printf("Number of executions: %,d\n", numTrials);
-        console.printf("Valid inputs:         %,d (%.2f%%)\n", numValid, numValid*100.0/numTrials);
-        console.printf("Cycles completed:     %d\n", cyclesCompleted);
-        console.printf("Unique failures:      %,d\n", uniqueFailures.size());
-        console.printf("Queue size:           %,d (%,d favored last cycle)\n", savedInputs.size(), numFavoredLastCycle);
-        console.printf("Current parent input: %s\n", currentParentInputDesc);
-        console.printf("Execution speed:      %,d/sec now | %,d/sec overall\n", intervalExecsPerSec, execsPerSec);
-        console.printf("Total coverage:       %,d branches (%.2f%% of map)\n", nonZeroCount, nonZeroFraction);
-        console.printf("Valid coverage:       %,d branches (%.2f%% of map)\n", nonZeroValidCount, nonZeroValidFraction);
-        console.printf("Unique valid inputs:  %,d (%.2f%%)\n", uniqueValidInputs.size(),
-                uniqueValidInputs.size()*100.0/numTrials);
-        console.printf("Unique valid paths:   %,d \n", uniquePaths.size());
-        console.printf("''  non-zero paths:   %,d \n", uniqueBranchSets.size());
 
- */       String plotData = String.format("%d, %d, %d, %d, %d, %d, %d, %d, %d",
+
+        String plotData = String.format("%d, %d, %d, %d, %d, %d, %d, %d, %d",
                 TimeUnit.MILLISECONDS.toSeconds(now.getTime()), uniqueFailures.size(), nonZeroCount, nonZeroValidCount,
                 numTrials, numValid, uniquePaths.size(), uniqueBranchSets.size(), uniqueValidInputs.size() );
 
@@ -728,9 +729,9 @@ public class ZestGuidance implements Guidance {
             }
         }
 
-//        if (console != null) {
+
         displayStats();
-//        }
+
 
     }
 
