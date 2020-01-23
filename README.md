@@ -2,7 +2,7 @@
 
 This project contains the source code for RLCheck, a method for guiding generators with reinforcement learning.
 
-Developed by Sameer Reddy (sameerreddy13) and Caroline Lemieux (carolemieux) on top of Rohan Padhye's [JQF](www.github.com/rohanpadhye/jqf).
+Developed by Sameer Reddy (sameerreddy13) and Caroline Lemieux (carolemieux) on top of Rohan Padhye's [JQF](https://www.github.com/rohanpadhye/jqf).
 
 ## Directory structure
 
