@@ -45,7 +45,7 @@ The results will be put in `RESULTS_DIR/python-data`. If the script finds output
 
 Each rep takes around 1-2 minutes to execute. In the paper we ran 10 reps; you can run a smaller number (we recommend at least 3-5) depending on your resource constraints
 
-### Main Evaluation (5 minutes human time + 15+ hours compute time)
+### Main Evaluation 
 
 The main evaluation of this paper involves experiments with **4 fuzzing techniques** on **4 benchmark programs**. The experiments can be launched via `scripts/run_java_exps.sh`, whose usage is as follows:
 
