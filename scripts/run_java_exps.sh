@@ -10,6 +10,9 @@ if [ -z "$JQF_DIR" ]; then
 	exit 1
 fi
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+JQF_DIR=$DIR/../jqf
+
 BASE_OUT_DIR=$1
 NUM_REPS=$2
 OUT_DIR=$BASE_OUT_DIR/java-data
