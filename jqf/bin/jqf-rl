@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Figure out script absolute path
+pushd `dirname $0` > /dev/null
+BIN_DIR=`pwd`
+popd > /dev/null
+
+ROOT_DIR=`dirname $BIN_DIR`
+
+print_usage() {
+  echo "Usage: $0 [-c CLASSPATH] [-N MAX_TRIALS] [-v] [-n] TEST_CLASS TEST_METHOD GENERATOR_CLASS"
+}
+
+while getopts ":c:N:vn" opt; do
+  case $opt in
+    /?)
+      echo "Invalid option: -$OPTARG" >&2
+      print_usage >&1
+      exit 1
+      ;;
+    c)
+      export CLASSPATH="$OPTARG"
+      ;;
+    v)
+      export JVM_OPTS="$JVM_OPTS -Djqf.logCoverage=true"
+      ;;
+    n) 
+      export JQF_DISABLE_INSTRUMENTATION=1
+      ;;
+    N) 
+      export JVM_OPTS="$JVM_OPTS -Djqf.guidance.MAX_TRIALS=$OPTARG"
+  esac
+done
+shift $((OPTIND-1))
+
+# Check arguments
+if [ $# -lt 2 ]; then
+  print_usage >&1
+  exit 1
+fi
+
+# Run the Zest input driver
+$ROOT_DIR/scripts/jqf-driver.sh edu.berkeley.cs.jqf.fuzz.rl.RLDriver $@

@@ -1,0 +1,18 @@
+{"params": [
+	{
+		"name": "seed",
+		"type": "long",
+		"val": 10
+	},
+ 	{
+ 		"name": "stateSize",
+	    "type": "int",
+	    "val": 5
+	},
+	{
+		"name": "defaultEpsilon",
+		"type": "double",
+		"val": 0.25
+	}
+]}
+

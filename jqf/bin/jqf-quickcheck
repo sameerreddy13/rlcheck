@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Figure out script absolute path
+pushd `dirname $0` > /dev/null
+BIN_DIR=`pwd`
+popd > /dev/null
+
+export JVM_OPTS="$JVM_OPTS -Djqf.ei.TOTALLY_RANDOM=true"
+$BIN_DIR/jqf-zest $@

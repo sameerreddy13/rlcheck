@@ -1,0 +1,8 @@
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/util/NonZeroCachingCountersTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/rl/RLParamParserTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/guidance/GuidanceTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/util/CountersTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/afl/RedundancyTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/ei/ExecutionIndexingTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/util/CoverageTest.java
+/rlcheck-artifact/rlcheck/jqf/fuzz/src/test/java/edu/berkeley/cs/jqf/fuzz/ei/ExecutionIndexingGuidanceTest.java
