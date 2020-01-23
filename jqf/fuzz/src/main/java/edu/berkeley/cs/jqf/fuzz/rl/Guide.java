@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by clemieux on 6/17/19.
  */
-public interface Oracle {
+public interface Guide {
 
 //<<<<<<< HEAD
     Object select(List<Object> actions, String state, int id);

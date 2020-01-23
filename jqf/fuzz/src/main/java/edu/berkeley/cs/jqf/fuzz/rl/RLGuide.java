@@ -10,10 +10,10 @@ import java.lang.Math;
  */
 
 /**
- * Oracle used by RL generator to make choices.
+ * Guide used by RL generator to make choices.
  * Functionality is as in GeneratorMC found in python/Generator.py
 */
-public class RLOracle implements Oracle {
+public class RLGuide implements Guide {
 
     /**  Used in stateToString */
     public static final String stateDelim = " | ";
@@ -28,13 +28,13 @@ public class RLOracle implements Oracle {
     private Random rand; // Source of randomness. Can be initialized with chosen seed.
 
     /** Construct with random seed */
-    public RLOracle() {
+    public RLGuide() {
         this.idToRL= new HashMap<>();
         rand = new Random();
     }
 
     /** Construct with custom seed */
-    public RLOracle(long seed) {
+    public RLGuide(long seed) {
         this.idToRL= new HashMap<>();
         rand = new Random(seed);
     }

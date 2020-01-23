@@ -1,6 +1,6 @@
 package edu.berkeley.cs.jqf.examples.js;
 import edu.berkeley.cs.jqf.fuzz.rl.RLGenerator;
-import edu.berkeley.cs.jqf.fuzz.rl.RLOracle;
+import edu.berkeley.cs.jqf.fuzz.rl.RLGuide;
 import edu.berkeley.cs.jqf.fuzz.rl.RLParams;
 import java.util.*;
 import java.util.function.Function;
@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class JavaScriptRLGenerator implements RLGenerator {
 
-    private RLOracle oracle;
+    private RLGuide guide;
 
     private static final int MAX_IDENTIFIERS = 50;
     private static final int MAX_EXPRESSION_DEPTH = 7;
@@ -74,22 +74,22 @@ public class JavaScriptRLGenerator implements RLGenerator {
      */
     public void init(RLParams params){
         if (params.exists("seed")){
-            oracle = new RLOracle((long) params.get("seed"));
+            guide = new RLGuide((long) params.get("seed"));
         } else {
-            oracle = new RLOracle();
+            guide = new RLGuide();
         }
         double e = (double) params.get("defaultEpsilon", true);
-        List<Object> ints =  Arrays.asList(RLOracle.range(MIN_INT, MAX_INT+1));
+        List<Object> ints =  Arrays.asList(RLGuide.range(MIN_INT, MAX_INT+1));
         List<Object> bools = Arrays.asList(BOOLEANS);
         List <Object> ascii = new ArrayList<> (26);
         for (char c = 'A'; c <= 'Z'; c++)
             ascii.add(String.valueOf(c));
 
         this.stateSize = (int) params.get("stateSize", true);
-        this.selectId = oracle.addLearner(null, e);
-        this.intId = oracle.addLearner(ints, e);
-        this.boolId = oracle.addLearner(bools, e);
-        this.chrId = oracle.addLearner(ascii, e);
+        this.selectId = guide.addLearner(null, e);
+        this.intId = guide.addLearner(ints, e);
+        this.boolId = guide.addLearner(bools, e);
+        this.chrId = guide.addLearner(ascii, e);
 
     }
 
@@ -110,7 +110,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
      * @param r reward
      */
     public void update(int r) {
-        oracle.update(r);
+        guide.update(r);
     }
 
 
@@ -118,8 +118,8 @@ public class JavaScriptRLGenerator implements RLGenerator {
         stateArr = updateState(stateArr, "node=expression");
         expressionDepth++;
         String result;
-        if (expressionDepth >= MAX_EXPRESSION_DEPTH || (Boolean) oracle.select(stateArr, boolId)) {
-            String fn = (String) oracle.select(
+        if (expressionDepth >= MAX_EXPRESSION_DEPTH || (Boolean) guide.select(stateArr, boolId)) {
+            String fn = (String) guide.select(
                     Arrays.asList(EXPRESSIONS_1),
                     stateArr,
                     selectId
@@ -136,7 +136,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
             }
 
         } else {
-            String fn = (String) oracle.select(
+            String fn = (String) guide.select(
                     Arrays.asList(EXPRESSIONS_2),
                     stateArr,
                     selectId
@@ -178,8 +178,8 @@ public class JavaScriptRLGenerator implements RLGenerator {
         stateArr = updateState(stateArr, "node=statement");
         statementDepth++;
         String result;
-        if (statementDepth >= MAX_STATEMENT_DEPTH || (Boolean) oracle.select(stateArr, boolId)) {
-            String fn = (String) oracle.select(
+        if (statementDepth >= MAX_STATEMENT_DEPTH || (Boolean) guide.select(stateArr, boolId)) {
+            String fn = (String) guide.select(
                     Arrays.asList(STATEMENTS_1),
                     stateArr,
                     selectId
@@ -211,7 +211,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
             }
         } else {
-            String fn = (String) oracle.select(
+            String fn = (String) guide.select(
                     Arrays.asList(STATEMENTS_2),
                     stateArr,
                     selectId
@@ -249,28 +249,28 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateLiteralNode(String[] stateArr) {
         String[] stateBool = updateState(stateArr, "node=literal");
-        if (expressionDepth < MAX_EXPRESSION_DEPTH && (Boolean) oracle.select(stateBool, boolId)) {
+        if (expressionDepth < MAX_EXPRESSION_DEPTH && (Boolean) guide.select(stateBool, boolId)) {
             stateBool = updateState(stateArr, "branch=1");
             //TODO multiple expressions in brackets
-            int numArgs = (int) oracle.select(stateBool, intId);
-            if ((Boolean) oracle.select(stateBool, boolId)) {
+            int numArgs = (int) guide.select(stateBool, intId);
+            if ((Boolean) guide.select(stateBool, boolId)) {
                 return "[" + generateItems(this::generateExpression, stateArr, numArgs) + "]";
             } else {
                 return "{" + generateItems(this::generateObjectProperty, stateArr, numArgs) + "}";
             }
         } else {
-            String type = (String) oracle.select(
+            String type = (String) guide.select(
                     Arrays.asList(LITERAL_TYPES),
                     stateArr,
                     selectId
             );
             switch (type){
                 case "int":
-                    return String.valueOf(oracle.select(stateArr, intId));
+                    return String.valueOf(guide.select(stateArr, intId));
                 case "boolean":
-                    return String.valueOf(oracle.select(stateArr, boolId));
+                    return String.valueOf(guide.select(stateArr, boolId));
                 case "string":
-                    Function<String[], String> genChr = s -> (String) oracle.select(s, chrId);
+                    Function<String[], String> genChr = s -> (String) guide.select(s, chrId);
                     return String.join("", generateItems(genChr, stateArr, MAX_STR_LEN));
                 default:
                     return type;
@@ -281,19 +281,19 @@ public class JavaScriptRLGenerator implements RLGenerator {
     private String generateIdentNode(String[] stateArr) {
         String identifier;
         stateArr = updateState(stateArr, "node=ident");
-        if (identifiers.isEmpty() || (identifiers.size() < MAX_IDENTIFIERS && (Boolean) oracle.select(stateArr, boolId))) {
-            identifier = oracle.select(stateArr, chrId) + "_" + identifiers.size();
+        if (identifiers.isEmpty() || (identifiers.size() < MAX_IDENTIFIERS && (Boolean) guide.select(stateArr, boolId))) {
+            identifier = guide.select(stateArr, chrId) + "_" + identifiers.size();
             identifiers.add(identifier);
         } else {
             List<Object> identList = new ArrayList<>(identifiers);
-            identifier = (String) oracle.select(identList, stateArr, selectId);
+            identifier = (String) guide.select(identList, stateArr, selectId);
         }
         return identifier;
     }
 
     private String generateUnaryNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=unary");
-        String token = (String) oracle.select(
+        String token = (String) guide.select(
                 Arrays.asList(UNARY_TOKENS),
                 stateArr,
                 selectId
@@ -304,7 +304,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateBinaryNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=binary");
-        String token = (String) oracle.select(
+        String token = (String) guide.select(
                 Arrays.asList(BINARY_TOKENS),
                 stateArr,
                 selectId
@@ -326,12 +326,12 @@ public class JavaScriptRLGenerator implements RLGenerator {
         String func = generateExpression(stateArr);
 
         stateArr = updateState(stateArr, "func=" + func);
-        int numArgs = (int) oracle.select(stateArr, intId);
+        int numArgs = (int) guide.select(stateArr, intId);
         String args = String.join(",", generateItems(this::generateExpression, stateArr, numArgs));
 
         stateArr = updateState(stateArr, "args=" + args);
         String call = func + "(" + args + ")";
-        if ((Boolean) oracle.select(stateArr, boolId)) {
+        if ((Boolean) guide.select(stateArr, boolId)) {
             return call;
         } else {
             return "new" + call;
@@ -340,7 +340,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateFunctionNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=function");
-        int numArgs = (int) oracle.select(stateArr, intId);
+        int numArgs = (int) guide.select(stateArr, intId);
         return "function(" + String.join(", ", generateItems(this::generateIdentNode, stateArr, numArgs)) + ")"
                 + generateBlock(stateArr);
     }
@@ -358,9 +358,9 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateArrowFunctionNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=arrow");
-        int numArgs = (int) oracle.select(stateArr, intId);
+        int numArgs = (int) guide.select(stateArr, intId);
         String params = "(" + String.join(", ", generateItems(this::generateIdentNode, stateArr, numArgs)) + ")";
-        if ((Boolean) oracle.select(stateArr, boolId)) {
+        if ((Boolean) guide.select(stateArr, boolId)) {
             return params + " => " + generateBlock(stateArr);
         } else {
             return params + " => " + generateExpression(stateArr);
@@ -369,7 +369,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateBlock(String[] stateArr) {
         stateArr = updateState(stateArr, "node=block");
-        int numArgs = (int) oracle.select(stateArr, intId);
+        int numArgs = (int) guide.select(stateArr, intId);
         return "{ " + String.join(";", generateItems(this::generateStatement, stateArr, numArgs)) + " }";
 
     }
@@ -384,7 +384,7 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateReturnNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=return");
-        return (Boolean) oracle.select(stateArr, boolId) ? "return" : "return " + generateExpression(stateArr);
+        return (Boolean) guide.select(stateArr, boolId) ? "return" : "return " + generateExpression(stateArr);
     }
 
     private String generateThrowNode(String[] stateArr) {
@@ -406,23 +406,23 @@ public class JavaScriptRLGenerator implements RLGenerator {
         return "if (" +
                 generateExpression(stateArr) + ") " +
                 generateBlock(stateArr) +
-                ((Boolean) oracle.select(stateArr, boolId) ? generateBlock(stateArr) : "");
+                ((Boolean) guide.select(stateArr, boolId) ? generateBlock(stateArr) : "");
     }
 
     private String generateForNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=for");
         String s = "for(";
-        if ((Boolean) oracle.select(stateArr, boolId)) {
+        if ((Boolean) guide.select(stateArr, boolId)) {
             stateArr = updateState(stateArr, "branch=1");
             s += generateExpression(stateArr);
         }
         s += ";";
-        if ((Boolean) oracle.select(stateArr, boolId)) {
+        if ((Boolean) guide.select(stateArr, boolId)) {
             stateArr = updateState(stateArr, "branch=2");
             s += generateExpression(stateArr);
         }
         s += ";";
-        if ((Boolean) oracle.select(stateArr, boolId)) {
+        if ((Boolean) guide.select(stateArr, boolId)) {
             stateArr = updateState(stateArr, "branch=3");
             s += generateExpression(stateArr);
         }
@@ -439,13 +439,13 @@ public class JavaScriptRLGenerator implements RLGenerator {
 
     private String generateNamedFunctionNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=namedfunc");
-        int numArgs = (int) oracle.select(stateArr, intId);
+        int numArgs = (int) guide.select(stateArr, intId);
         return "function " + generateIdentNode(stateArr) + "(" + String.join(", ", generateItems(this::generateIdentNode, stateArr, numArgs)) + ")" + generateBlock(stateArr);
     }
 
     private String generateSwitchNode(String[] stateArr) {
         stateArr = updateState(stateArr, "node=switch");
-        int numArgs = (int) oracle.select(stateArr, intId);
+        int numArgs = (int) guide.select(stateArr, intId);
         return "switch(" + generateExpression(stateArr) + ") {"
                 + String.join(" ", generateItems(this::generateCaseNode, stateArr, numArgs) + "}");
     }

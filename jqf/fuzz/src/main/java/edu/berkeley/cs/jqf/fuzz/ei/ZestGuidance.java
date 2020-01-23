@@ -729,9 +729,7 @@ public class ZestGuidance implements Guidance {
             }
         }
 
-
         displayStats();
-
 
     }
 

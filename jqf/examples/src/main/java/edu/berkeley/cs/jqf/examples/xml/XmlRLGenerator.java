@@ -1,7 +1,7 @@
 package edu.berkeley.cs.jqf.examples.xml;
 
 import edu.berkeley.cs.jqf.fuzz.rl.RLGenerator;
-import edu.berkeley.cs.jqf.fuzz.rl.RLOracle;
+import edu.berkeley.cs.jqf.fuzz.rl.RLGuide;
 import edu.berkeley.cs.jqf.fuzz.rl.RLParams;
 import org.junit.Assume;
 import org.w3c.dom.DOMException;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class XmlRLGenerator implements RLGenerator {
 
-    private RLOracle oracle;
+    private RLGuide guide;
 
 
     private static DocumentBuilderFactory documentBuilderFactory =
@@ -49,8 +49,8 @@ public class XmlRLGenerator implements RLGenerator {
     /** Terminal action output */
 //    public static final String terminal = "END";
     private final List<Object> BOOLEANS = Arrays.asList(new Boolean[]{true, false});
-    private final List<Object> NUM_C =  Arrays.asList(RLOracle.range(0, MAX_NUM_CHILDREN));
-    private final List<Object> NUM_A =  Arrays.asList(RLOracle.range(0, MAX_NUM_ATTRIBUTES));
+    private final List<Object> NUM_C =  Arrays.asList(RLGuide.range(0, MAX_NUM_CHILDREN));
+    private final List<Object> NUM_A =  Arrays.asList(RLGuide.range(0, MAX_NUM_ATTRIBUTES));
 
 
     private int stateSize;
@@ -73,18 +73,18 @@ public class XmlRLGenerator implements RLGenerator {
     @Override
     public void init(RLParams params) {
         if (params.exists("seed")){
-            oracle = new RLOracle((long) params.get("seed"));
+            guide = new RLGuide((long) params.get("seed"));
         } else {
-            oracle = new RLOracle();
+            guide = new RLGuide();
         }
         double e = (double) params.get("defaultEpsilon", true);
         List<Object> text = (List<Object>) params.get("tags", true);
 
         this.stateSize = (int) params.get("stateSize", true);
-        this.textId = oracle.addLearner(text, e); // used to select tags, attributes, text, CDATA
-        this.boolId = oracle.addLearner(BOOLEANS, e); // used for all booleans
-        this.numcId = oracle.addLearner(NUM_C, e); // num children
-        this.numaId = oracle.addLearner(NUM_A, e); // num attributes
+        this.textId = guide.addLearner(text, e); // used to select tags, attributes, text, CDATA
+        this.boolId = guide.addLearner(BOOLEANS, e); // used for all booleans
+        this.numcId = guide.addLearner(NUM_C, e); // num children
+        this.numaId = guide.addLearner(NUM_A, e); // num attributes
     }
 
     /**
@@ -113,7 +113,7 @@ public class XmlRLGenerator implements RLGenerator {
     /** Update using reward r */
     @Override
     public void update(int r){
-        oracle.update(r);
+        guide.update(r);
     }
 
 
@@ -128,18 +128,18 @@ public class XmlRLGenerator implements RLGenerator {
 
     /** Recursively generate XML */
     private Element generateXmlTree(String[] stateArr, Document document, int depth) {
-        String rootTag = (String) oracle.select(stateArr, textId);
+        String rootTag = (String) guide.select(stateArr, textId);
 
         Element root = document.createElement(rootTag);
         stateArr = updateState(stateArr, "tag=" + rootTag);
 
         // Add attributes
-        int numAttributes = (Integer) oracle.select(stateArr, numaId);
+        int numAttributes = (Integer) guide.select(stateArr, numaId);
         for (int i = 0; i < numAttributes; i++) {
             String [] attrState = updateState(stateArr, "attrVal");
-            String attrKey = (String) oracle.select(attrState, textId);
+            String attrKey = (String) guide.select(attrState, textId);
             attrState = updateState(stateArr, "attrKey="+attrKey);
-            String attrValue = (String) oracle.select(attrState, textId);
+            String attrValue = (String) guide.select(attrState, textId);
             root.setAttribute(attrKey, attrValue);
         }
         // Make children recursively or text or CDATA
@@ -148,20 +148,20 @@ public class XmlRLGenerator implements RLGenerator {
         String[] childState = updateState(stateArr, "child");
         String textVal = null;
         if (depth < minDepth ||
-                (depth < maxDepth && (boolean) oracle.select(childState, boolId))) {
-            int numChildren = (Integer) oracle.select(stateArr, numcId);
+                (depth < maxDepth && (boolean) guide.select(childState, boolId))) {
+            int numChildren = (Integer) guide.select(stateArr, numcId);
             for (int i = 0; i < numChildren; i++) {
                 Element child = generateXmlTree(stateArr, document, depth + 1);
                 if (child != null) {
                     root.appendChild(child);
                 }
             }
-        } else if ((boolean) oracle.select(textState, boolId)) {
-            textVal = (String) oracle.select(textState, textId);
+        } else if ((boolean) guide.select(textState, boolId)) {
+            textVal = (String) guide.select(textState, textId);
             Text text = document.createTextNode(textVal);
             root.appendChild(text);
-        } else if ((boolean) oracle.select(CDATAState, boolId)){
-            textVal = (String) oracle.select(CDATAState, textId);
+        } else if ((boolean) guide.select(CDATAState, boolId)){
+            textVal = (String) guide.select(CDATAState, textId);
             Text text = document.createCDATASection(textVal);
             root.appendChild(text);
         }
