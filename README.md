@@ -35,6 +35,6 @@ and
 
 ## Further reading
 
-* Our ICSE 2020 paper on RLCheck, see [author's version](www.carolemieux.com/rlcheck_preprint.pdf). 
+* Our ICSE 2020 paper on RLCheck, see [author's version](https://www.carolemieux.com/rlcheck_preprint.pdf). 
 * `REPLICATION.md` contains instructions to replicate the experiments from the RLCheck paper, including how to load a docker container containing a pre-built RLCheck
 
