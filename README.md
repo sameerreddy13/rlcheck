@@ -2,11 +2,13 @@
 
 This project contains the source code for RLCheck, a method for guiding generators with reinforcement learning.
 
-Developed by Sameer Reddy (sameerreddy13) and Caroline Lemieux (carolemieux) on top of Rohan Padhye's [JQF](https://www.github.com/rohanpadhye/jqf).
+To reference RLCheck in your research, you can cite our [ICSE 2020 paper](https://www.carolemieux.com/rlcheck_preprint.pdf) (to appear):
+>  Sameer Reddy, Caroline Lemieux, Rohan Padhye, Koushik Sen. 2020. **Quickly Generating Diverse Valid Test Inputs with Reinforcement Learning**. In Proceedings of the 42nd International Conference on Software Engineering (ICSE ’20), May 23–29, 2020, Seoul, Sout Korea. ACM, New York, NY, USA, 12 pages. 
+
 
 ## Directory structure
 
-* `jqf`: the main RLCheck implementation built on top of JQF
+* `jqf`: the main RLCheck implementation built on top of [JQF](https://github.com/rohanpadhye/jqf)
 * `bst_example`: a python implementation of RLCheck for a BST example
 * `scripts` : contains scripts for running experiments and plotting results
 
