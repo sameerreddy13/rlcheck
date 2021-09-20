@@ -2,7 +2,7 @@
 
 This project contains the source code for RLCheck, a method for guiding generators with reinforcement learning.
 
-To reference RLCheck in your research, you can cite our [ICSE 2020 paper](https://www.carolemieux.com/rlcheck_preprint.pdf) (to appear):
+To reference RLCheck in your research, you can cite our [ICSE 2020 paper](https://ieeexplore.ieee.org/document/9284117):
 >  Sameer Reddy, Caroline Lemieux, Rohan Padhye, Koushik Sen. 2020. **Quickly Generating Diverse Valid Test Inputs with Reinforcement Learning**. In Proceedings of the 42nd International Conference on Software Engineering (ICSE ’20), May 23–29, 2020, Seoul, Sout Korea. ACM, New York, NY, USA, 12 pages. 
 
 
